@@ -1,6 +1,6 @@
 # depthstream
 
-**stream kinect's depth image to websocket clients***
+**stream kinect's depth image to websocket clients**
 
 ## Usage
 
