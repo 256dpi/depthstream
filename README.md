@@ -41,8 +41,8 @@ See the [example](https://github.com/256dpi/depthstream/tree/master/test).
 First install dependencies using brew:
 
 ```bash
-brew install libusb
-brew install libfreenect
+$ brew install libusb
+$ brew install libfreenect
 ```
 
 Then download the latest binary from [releases](https://github.com/256dpi/depthstream/releases).
