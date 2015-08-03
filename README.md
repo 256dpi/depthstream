@@ -45,7 +45,7 @@ brew install libusb
 brew install libfreenect
 ```
 
-Then [download](https://github.com/256dpi/depthstream/releases) the latest binary from releases.
+Then download the latest binary from [releases](https://github.com/256dpi/depthstream/releases).
 
 ## Build
 
