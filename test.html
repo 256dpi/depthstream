@@ -2,6 +2,12 @@
   <head>
     <title>Depthstream Test</title>
     <style>
+      #info {
+        text-align: center;
+        font-family: sans-serif;
+        margin-bottom: 5px;
+      }
+
       #depth {
         border: 1px solid black;
         display: block;
@@ -10,45 +16,56 @@
     </style>
   </head>
   <body>
+    <div id="info">? F/s - ? MB/s</div>
     <canvas width="640" height="480" id="depth"></canvas>
     <script>
+      var info = document.getElementById("info");
       var canvas = document.getElementById("depth");
       var ctx = canvas.getContext("2d");
 
       var reader = new FileReader();
+      var frames = 0;
+      var bytes = 0;
 
       reader.addEventListener("loadend", function() {
-          var bytes = new Uint8Array(reader.result);
+        var array = new Uint8Array(reader.result);
 
-          var img = ctx.createImageData(640, 480);
+        var img = ctx.createImageData(640, 480);
 
-          for(var i=0; i<480; i++) {
-              for(var j=0; j<640; j++) {
-                  var pos = i * 480 + j;
-                  var value = 255 - bytes[pos];
-                  img.data[pos * 4] = value;
-                  img.data[pos * 4 + 1] = value;
-                  img.data[pos * 4 + 2] = value;
-                  img.data[pos * 4 + 3] = 255;
-              }
+        for(var i=0; i<480; i++) {
+          for(var j=0; j<640; j++) {
+            var pos = i * 480 + j;
+            var value = 255 - array[pos];
+            img.data[pos * 4] = value;
+            img.data[pos * 4 + 1] = value;
+            img.data[pos * 4 + 2] = value;
+            img.data[pos * 4 + 3] = 255;
           }
+        }
 
-          ctx.putImageData(img, 0, 0);
+        ctx.putImageData(img, 0, 0);
 
-          setTimeout(function(){
-              ws.send("");
-          }, 500);
+        ws.send("");
       });
 
       var ws = new WebSocket("ws://localhost:8080");
 
       ws.onopen = function (event) {
-          ws.send("");
+        ws.send("");
       };
 
       ws.onmessage = function (message) {
-          reader.readAsArrayBuffer(message.data);
+        frames++;
+        bytes += message.data.size;
+        reader.readAsArrayBuffer(message.data);
       };
+
+      setInterval(function(){
+        var mbs =  Math.round(bytes / 1024 / 1024 * 100) / 100;
+        info.innerHTML = frames + ' F/s - ' + mbs + ' MB/s';
+        frames = 0;
+        bytes = 0;
+      }, 1000);
     </script>
   </body>
 </html>
