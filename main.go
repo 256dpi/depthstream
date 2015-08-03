@@ -25,7 +25,7 @@ func main() {
       data := make(chan []uint16)
 
       relay := NewRelay()
-      relay.Start()
+      relay.Start(c.port)
 
       stream := NewDepthStream(data)
       stream.Open(0)

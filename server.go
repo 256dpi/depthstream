@@ -65,13 +65,13 @@ func relay(r *Relay) {
     select {
     case c := <-r.register:
       r.connections[c] = true
-      fmt.Printf("new client, total: %d\n", len(r.connections))
+      fmt.Printf("New client, total: %d\n", len(r.connections))
     case c := <-r.unregister:
       if _, ok := r.connections[c]; ok {
         delete(r.connections, c)
         close(c.send)
       }
-      fmt.Printf("lost client, total: %d\n", len(r.connections))
+      fmt.Printf("Lost client, total: %d\n", len(r.connections))
     case m := <-r.broadcast:
       for c := range r.connections {
         c.send <- m
@@ -80,7 +80,7 @@ func relay(r *Relay) {
   }
 }
 
-func (r *Relay) Start() {
+func (r *Relay) Start(port int) {
   go relay(r)
 
   http.HandleFunc("/", func(res http.ResponseWriter, req *http.Request){
@@ -106,13 +106,13 @@ func (r *Relay) Start() {
   })
 
   go func(){
-    err := http.ListenAndServe("0.0.0.0:8080", nil)
+    err := http.ListenAndServe(fmt.Sprintf("0.0.0.0:%d", port), nil)
     if err != nil {
       panic(err)
     }
   }()
 
-  fmt.Println("server launched!")
+  fmt.Printf("Server launched on port %d\n", port)
 }
 
 func (r *Relay) Forward(msg []byte) {
