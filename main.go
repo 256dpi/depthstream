@@ -23,17 +23,22 @@ func main() {
       fmt.Printf("Start stream server on port %d with data from kinect %d...\n", c.port, c.device)
 
       data := make(chan []uint16)
+      queue := make(chan *connection)
 
-      relay := NewRelay()
+      relay := NewRelay(queue)
       relay.Start(c.port)
 
       stream := NewDepthStream(data)
       stream.Open(0)
 
       go func(){
+        var cache []uint16
         for {
-          depth := <-data
-          relay.Forward(Convert(depth))
+          select {
+          case cache = <-data:
+          case conn := <-queue:
+            conn.send <- Convert(cache)
+          }
         }
       }()
 

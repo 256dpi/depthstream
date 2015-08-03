@@ -1,0 +1,47 @@
+<html>
+  <head>
+    <title>Depthstream Test</title>
+  </head>
+  <body>
+    <canvas width="640" height="480" id="depth"></canvas>
+    <script>
+      var canvas = document.getElementById("depth");
+      var ctx = canvas.getContext("2d");
+
+      var reader = new FileReader();
+
+      reader.addEventListener("loadend", function() {
+          var bytes = new Uint8Array(reader.result);
+
+          var img = ctx.createImageData(640, 480);
+
+          for(var i=0; i<480; i++) {
+              for(var j=0; j<640; j++) {
+                  var pos = i * 480 + j;
+                  var value = 255 - bytes[pos];
+                  img.data[pos * 4] = value;
+                  img.data[pos * 4 + 1] = value;
+                  img.data[pos * 4 + 2] = value;
+                  img.data[pos * 4 + 3] = 255;
+              }
+          }
+
+          ctx.putImageData(img, 0, 0);
+
+          setTimeout(function(){
+              ws.send("!");
+          }, 500);
+      });
+
+      var ws = new WebSocket("ws://localhost:8080");
+
+      ws.onopen = function (event) {
+          ws.send("!");
+      };
+
+      ws.onmessage = function (message) {
+          reader.readAsArrayBuffer(message.data);
+      };
+    </script>
+  </body>
+</html>

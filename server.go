@@ -18,10 +18,9 @@ func (c *connection) write(mt int, payload []byte) error {
   return c.ws.WriteMessage(mt, payload)
 }
 
-func (c *connection) loop() {
+func (c *connection) writeLoop() {
   defer func(){
     c.ws.Close()
-    c.relay.unregister <- c
   }()
 
   for {
@@ -38,18 +37,34 @@ func (c *connection) loop() {
   }
 }
 
+func (c *connection) readLoop() {
+  defer func() {
+    c.relay.unregister <- c
+    c.ws.Close()
+  }()
+
+  for {
+    _, _, err := c.ws.ReadMessage()
+    if err != nil {
+      break
+    }
+
+    c.relay.queue <- c
+  }
+}
+
 type Relay struct {
+  queue chan *connection
   connections map[*connection]bool
-  broadcast chan []byte
   register chan *connection
   unregister chan *connection
   upgrader *websocket.Upgrader
 }
 
-func NewRelay() *Relay {
+func NewRelay(queue chan *connection) *Relay {
   return &Relay{
+    queue: queue,
     connections: make(map[*connection]bool),
-    broadcast: make(chan []byte),
     register: make(chan *connection),
     unregister: make(chan *connection),
     upgrader: &websocket.Upgrader{
@@ -72,10 +87,6 @@ func relay(r *Relay) {
         close(c.send)
       }
       fmt.Printf("Lost client, total: %d\n", len(r.connections))
-    case m := <-r.broadcast:
-      for c := range r.connections {
-        c.send <- m
-      }
     }
   }
 }
@@ -102,7 +113,8 @@ func (r *Relay) Start(port int) {
 
     r.register <- c
 
-    go c.loop()
+    go c.writeLoop()
+    go c.readLoop()
   })
 
   go func(){
@@ -113,10 +125,6 @@ func (r *Relay) Start(port int) {
   }()
 
   fmt.Printf("Server launched on port %d\n", port)
-}
-
-func (r *Relay) Forward(msg []byte) {
-  r.broadcast <- msg
 }
 
 func (r *Relay) Stop() {
