@@ -33,8 +33,7 @@ func main() {
       go func(){
         for {
           depth := <-data
-          data := []byte(fmt.Sprintf("%d", len(depth)))
-          relay.Forward(data)
+          relay.Forward(Convert(depth))
         }
       }()
 
