@@ -24,13 +24,17 @@ func main() {
 
       data := make(chan []uint16)
 
+      relay := NewRelay()
+      relay.Start()
+
       stream := NewDepthStream(data)
       stream.Open(0)
 
       go func(){
         for {
           depth := <-data
-          fmt.Println(len(depth))
+          data := []byte(fmt.Sprintf("%d", len(depth)))
+          relay.Forward(data)
         }
       }()
 
@@ -40,6 +44,7 @@ func main() {
       <-finish
 
       stream.Close()
+      relay.Stop()
     } else {
       fmt.Printf("Specify a device id >= 0 and port >= 100!\n")
     }
