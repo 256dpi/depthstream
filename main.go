@@ -8,29 +8,29 @@ import (
 )
 
 func start(c *Config) {
-  data := make(chan []uint16)
-  queue := make(chan *connection)
-  stream := make(chan *connection)
-
-  relay := NewRelay(queue, stream)
+  relay := NewRelay()
   relay.Start(c.port)
 
-  depthStream := NewDepthStream(data)
+  depthStream := NewDepthStream()
   depthStream.Open(c.device)
 
   go func(){
     var cache []uint16
-    var list []*connection
+    list := make(map[*connection]bool)
     for {
       select {
-      case cache = <-data:
-        for _, conn := range list {
+      case cache = <-depthStream.data:
+        for conn, _ := range list {
           conn.send <- Convert(cache)
         }
-      case conn := <-queue:
+      case conn := <-relay.queue:
         conn.send <- Convert(cache)
-      case conn := <-stream:
-        list = append(list, conn)
+      case conn := <-relay.stream:
+        list[conn] = true
+      case conn := <-relay.unstream:
+        if _, ok := list[conn]; ok {
+          delete(list, conn)
+        }
       }
     }
   }()

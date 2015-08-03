@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 
-rm depthstream.tar.gz
+rm -f depthstream
+rm -f depthstream.tar.gz
 
-gopm bin github.com/256dpi/depthstream
-tar -cvzf depthstream.tar.gz depthstream
+gopm build
+
+mv output depthstream
+
+tar -czf depthstream.tar.gz depthstream

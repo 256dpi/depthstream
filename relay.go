@@ -62,16 +62,18 @@ func (c *connection) readLoop() {
 type Relay struct {
   queue chan *connection
   stream chan *connection
+  unstream chan *connection
   connections map[*connection]bool
   register chan *connection
   unregister chan *connection
   upgrader *websocket.Upgrader
 }
 
-func NewRelay(queue chan *connection, stream chan *connection) *Relay {
+func NewRelay() *Relay {
   return &Relay{
-    queue: queue,
-    stream: stream,
+    queue: make(chan *connection),
+    stream: make(chan *connection),
+    unstream: make(chan *connection),
     connections: make(map[*connection]bool),
     register: make(chan *connection),
     unregister: make(chan *connection),
@@ -90,6 +92,7 @@ func manage(r *Relay) {
       r.connections[c] = true
       fmt.Printf("New client, total: %d\n", len(r.connections))
     case c := <-r.unregister:
+      r.unstream <- c
       if _, ok := r.connections[c]; ok {
         delete(r.connections, c)
         close(c.send)

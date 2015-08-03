@@ -31,9 +31,9 @@ type DepthStream struct {
   dev *freenect.Device
 }
 
-func NewDepthStream(ch chan []uint16) *DepthStream {
+func NewDepthStream() *DepthStream {
   return &DepthStream{
-    ch,
+    make(chan []uint16),
     make(chan int),
     &sync.WaitGroup{},
     nil,
