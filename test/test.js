@@ -11,12 +11,13 @@ function process(array){
 
   for(var i=0; i<480; i++) {
     for(var j=0; j<640; j++) {
-      var pos = i * 480 + j;
+      var pos = i * 640 + j;
       var value = 255 - array[pos];
-      img.data[pos * 4] = value;
-      img.data[pos * 4 + 1] = value;
-      img.data[pos * 4 + 2] = value;
-      img.data[pos * 4 + 3] = 255;
+      var index = pos * 4;
+      img.data[index] = value;
+      img.data[index + 1] = value;
+      img.data[index + 2] = value;
+      img.data[index + 3] = 255;
     }
   }
 
