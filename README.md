@@ -4,6 +4,8 @@
 
 With Depsthream you can easily get depth image data from your Kinect using a WebSocket Connection. A wepage running on the same computer can that way easily obtain the depth pixel array and feed into an animation.
 
+![Example](http://joel-github-static.s3.amazonaws.com/depthstream/scrrenshot.png)
+
 ## Usage
 
 ```
@@ -33,8 +35,6 @@ ws.onmessage = function (message) {
 ```
 
 See the [example](https://github.com/256dpi/depthstream/tree/master/test).
-
-![Example](http://joel-github-static.s3.amazonaws.com/depthstream/scrrenshot.png)
 
 ## Install (OSX only)
 
