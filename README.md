@@ -35,3 +35,10 @@ ws.onmessage = function (message) {
 See the [example](https://github.com/256dpi/depthstream/tree/master/test).
 
 ![Example](http://joel-github-static.s3.amazonaws.com/depthstream/scrrenshot.png)
+
+## Installation
+
+``bash
+$ gopm get
+$ gopm build
+```
