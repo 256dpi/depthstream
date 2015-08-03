@@ -38,7 +38,7 @@ See the [example](https://github.com/256dpi/depthstream/tree/master/test).
 
 ## Installation
 
-``bash
+```bash
 $ gopm get
 $ gopm build
 ```
