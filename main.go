@@ -2,6 +2,9 @@ package main
 
 import (
   "fmt"
+  "syscall"
+  "os/signal"
+  "os"
 )
 
 func main() {
@@ -18,7 +21,25 @@ func main() {
   } else if c.start {
     if c.device >= 0 && c.port > 100 {
       fmt.Printf("Start stream server on port %d with data from kinect %d...\n", c.port, c.device)
-      StreamDepthImage(c.port, c.device)
+
+      data := make(chan []uint16)
+
+      stream := NewDepthStream(data)
+      stream.Open(0)
+
+      go func(){
+        for {
+          depth := <-data
+          fmt.Println(len(depth))
+        }
+      }()
+
+      finish := make(chan os.Signal, 1)
+      signal.Notify(finish, syscall.SIGINT, syscall.SIGTERM)
+
+      <-finish
+
+      stream.Close()
     } else {
       fmt.Printf("Specify a device id >= 0 and port >= 100!\n")
     }

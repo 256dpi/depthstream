@@ -1,8 +1,9 @@
 package main
+
 import (
   "github.com/velovix/go-freenect"
   "fmt"
-  "time"
+  "sync"
 )
 
 func CountDevices() int {
@@ -22,42 +23,78 @@ func CountDevices() int {
   return cnt;
 }
 
-func StreamDepthImage(port int, device int) {
-  ctx, e1 := freenect.NewContext()
-  defer ctx.Destroy()
+type DepthStream struct {
+  data chan []uint16
+  stop chan int
+  wg *sync.WaitGroup
+  ctx *freenect.Context
+  dev *freenect.Device
+}
 
-  if e1 != nil {
-    panic(e1)
+func NewDepthStream(ch chan []uint16) *DepthStream {
+  return &DepthStream{
+    ch,
+    make(chan int),
+    &sync.WaitGroup{},
+    nil,
+    nil,
   }
+}
 
-  ctx.SetLogLevel(freenect.LogDebug)
+func process(ds *DepthStream){
+  defer ds.wg.Done()
 
-  kinect, e2 := ctx.OpenDevice(device)
-  defer kinect.Destroy()
-
-  if e2 != nil {
-    panic(e2)
-  }
-
-  kinect.SetDepthCallback(func(device *freenect.Device, depth []uint16, timestamp uint32){
-    fmt.Println(len(depth))
-  })
-
-  e3 := kinect.StartDepthStream(freenect.ResolutionMedium, freenect.DepthFormatMM)
-  defer kinect.StopDepthStream()
-
-  if e3 != nil {
-    panic(e3)
-  }
-
-  start := time.Now()
-
-  for time.Since(start).Seconds() < 10.0 {
-    // Process freenect events
-    err := ctx.ProcessEvents(0)
-    if err != nil {
-      fmt.Println(err)
-      break
+  for {
+    select {
+    case _ = <-ds.stop:
+      return
+    default:
+      ds.ctx.ProcessEvents(0);
     }
   }
+}
+
+func (ds *DepthStream) Open(device int) {
+  var (
+    err error
+    ctx freenect.Context
+    dev freenect.Device
+  )
+
+  ctx, err = freenect.NewContext()
+  ds.ctx = &ctx
+
+  if err != nil {
+    panic(err)
+  }
+
+  dev, err = ds.ctx.OpenDevice(device)
+  ds.dev = &dev
+
+  if err != nil {
+    panic(err)
+  }
+
+  ds.dev.SetDepthCallback(func(device *freenect.Device, depth []uint16, timestamp uint32){
+    ds.data <- depth
+  })
+
+  err = ds.dev.StartDepthStream(freenect.ResolutionMedium, freenect.DepthFormatMM)
+
+  if err != nil {
+    panic(err)
+  }
+
+  ds.wg.Add(1)
+  go process(ds)
+}
+
+func (ds *DepthStream) Close() {
+  close(ds.stop)
+  ds.wg.Wait()
+
+  fmt.Println("Clean up...")
+  ds.dev.StopDepthStream()
+  ds.dev.Destroy()
+  ds.ctx.Destroy()
 }
