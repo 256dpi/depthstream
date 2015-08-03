@@ -83,7 +83,7 @@ func NewRelay(queue chan *connection, stream chan *connection) *Relay {
   }
 }
 
-func relay(r *Relay) {
+func manage(r *Relay) {
   for {
     select {
     case c := <-r.register:
@@ -100,7 +100,7 @@ func relay(r *Relay) {
 }
 
 func (r *Relay) Start(port int) {
-  go relay(r)
+  go manage(r)
 
   http.HandleFunc("/", func(res http.ResponseWriter, req *http.Request){
     if req.Method != "GET" {
@@ -132,9 +132,9 @@ func (r *Relay) Start(port int) {
     }
   }()
 
-  fmt.Printf("Server launched on port %d\n", port)
+  fmt.Printf("Server launched on port %d!\n", port)
 }
 
 func (r *Relay) Stop() {
-  // does nothing at the moment
+  //TODO: disconnect clients
 }
