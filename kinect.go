@@ -79,7 +79,7 @@ func (ds *DepthStream) Open(device int) {
     ds.data <- depth
   })
 
-  err = ds.dev.StartDepthStream(freenect.ResolutionMedium, freenect.DepthFormat11Bit)
+  err = ds.dev.StartDepthStream(freenect.ResolutionMedium, freenect.DepthFormatMM)
 
   if err != nil {
     panic(err)

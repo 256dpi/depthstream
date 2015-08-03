@@ -1,6 +1,13 @@
 <html>
   <head>
     <title>Depthstream Test</title>
+    <style>
+      #depth {
+        border: 1px solid black;
+        display: block;
+        margin: 0 auto;
+      }
+    </style>
   </head>
   <body>
     <canvas width="640" height="480" id="depth"></canvas>
@@ -29,14 +36,14 @@
           ctx.putImageData(img, 0, 0);
 
           setTimeout(function(){
-              ws.send("!");
+              ws.send("");
           }, 500);
       });
 
       var ws = new WebSocket("ws://localhost:8080");
 
       ws.onopen = function (event) {
-          ws.send("!");
+          ws.send("");
       };
 
       ws.onmessage = function (message) {
