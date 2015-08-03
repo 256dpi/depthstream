@@ -31,3 +31,7 @@ ws.onmessage = function (message) {
   var array = new Uint8Array(message.data);
 };
 ```
+
+See the [example](https://github.com/256dpi/depthstream/tree/master/test).
+
+![Example](http://joel-github-static.s3.amazonaws.com/depthstream/scrrenshot.png)
