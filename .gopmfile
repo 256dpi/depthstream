@@ -1,0 +1,5 @@
+[res]
+include = 
+
+[deps]
+github.com/velovix/go-freenect = 
