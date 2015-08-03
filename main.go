@@ -2,70 +2,25 @@ package main
 
 import (
   "fmt"
-  "github.com/velovix/go-freenect"
-  "os"
-  "time"
 )
-
-var (
-  context freenect.Context
-  kinect freenect.Device
-  frameCnt int
-)
-
-func onDepthFrame(device *freenect.Device, depth []uint16, timestamp uint32) {
-  frameCnt++
-}
-
-func init() {
-  context, e1 := freenect.NewContext()
-
-  if e1 != nil {
-    panic(e1)
-  }
-
-  context.SetLogLevel(freenect.LogDebug)
-
-  count, e2 := context.DeviceCount()
-
-  if e2 != nil {
-    panic(e2)
-  }
-
-  if count == 0 {
-    fmt.Println("could not find any devices")
-    os.Exit(1)
-  }
-
-  kinect, e3 := context.OpenDevice(0)
-
-  if e3 != nil {
-    panic(e3)
-  }
-
-  kinect.SetDepthCallback(onDepthFrame)
-
-  e4 := kinect.StartDepthStream(freenect.ResolutionMedium, freenect.DepthFormatMM)
-
-  if e4 != nil {
-    panic(e4)
-  }
-}
 
 func main() {
-  initTime := time.Now()
+  c := ParseConfig()
 
-  for time.Since(initTime).Seconds() < 10.0 {
-    e1 := context.ProcessEvents(0)
+  if c.info {
+    count := CountDevices()
 
-    if e1 != nil {
-      panic(e1)
+    if(count == 1) {
+      fmt.Printf("There is one Kinect connected.\n")
+    } else {
+      fmt.Printf("There are %d Kinects connected.\n", count)
+    }
+  } else if c.start {
+    if c.device >= 0 && c.port > 100 {
+      fmt.Printf("Start stream server on port %d with data from kinect %d...\n", c.port, c.device)
+      StreamDepthImage(c.port, c.device)
+    } else {
+      fmt.Printf("Specify a device id >= 0 and port >= 100!\n")
     }
   }
-
-  fmt.Println("Processed", frameCnt, "frames in 10 seconds.")
-
-  kinect.StopDepthStream()
-  kinect.Destroy()
-  context.Destroy()
 }
