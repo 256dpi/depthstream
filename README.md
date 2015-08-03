@@ -36,7 +36,18 @@ See the [example](https://github.com/256dpi/depthstream/tree/master/test).
 
 ![Example](http://joel-github-static.s3.amazonaws.com/depthstream/scrrenshot.png)
 
-## Installation
+## Install (OSX only)
+
+First install dependencies using brew:
+
+```bash
+brew install libusb
+brew install libfreenect
+```
+
+Then [download](https://github.com/256dpi/depthstream/releases) the latest binary from releases.
+
+## Build
 
 ```bash
 $ gopm get
