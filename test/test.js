@@ -22,15 +22,13 @@ function process(array){
   }
 
   ctx.putImageData(img, 0, 0);
-
-  ws.send('');
 };
 
 var ws = new WebSocket('ws://localhost:8080');
 ws.binaryType = 'arraybuffer';
 
 ws.onopen = function (event) {
-  ws.send('');
+  ws.send('*');
 };
 
 ws.onmessage = function (message) {

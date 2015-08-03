@@ -24,20 +24,27 @@ func main() {
 
       data := make(chan []uint16)
       queue := make(chan *connection)
+      stream := make(chan *connection)
 
-      relay := NewRelay(queue)
+      relay := NewRelay(queue, stream)
       relay.Start(c.port)
 
-      stream := NewDepthStream(data)
-      stream.Open(0)
+      depthStream := NewDepthStream(data)
+      depthStream.Open(0)
 
       go func(){
         var cache []uint16
+        var list []*connection
         for {
           select {
           case cache = <-data:
+            for _, conn := range list {
+              conn.send <- Convert(cache)
+            }
           case conn := <-queue:
             conn.send <- Convert(cache)
+          case conn := <-stream:
+            list = append(list, conn)
           }
         }
       }()
@@ -47,7 +54,7 @@ func main() {
 
       <-finish
 
-      stream.Close()
+      depthStream.Close()
       relay.Stop()
     } else {
       fmt.Printf("Specify a device id >= 0 and port >= 100!\n")

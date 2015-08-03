@@ -44,26 +44,34 @@ func (c *connection) readLoop() {
   }()
 
   for {
-    _, _, err := c.ws.ReadMessage()
+    _, msg, err := c.ws.ReadMessage()
     if err != nil {
       break
     }
 
-    c.relay.queue <- c
+    str := string(msg)
+
+    if str == "1" {
+      c.relay.queue <- c
+    } else if str == "*" {
+      c.relay.stream <- c
+    }
   }
 }
 
 type Relay struct {
   queue chan *connection
+  stream chan *connection
   connections map[*connection]bool
   register chan *connection
   unregister chan *connection
   upgrader *websocket.Upgrader
 }
 
-func NewRelay(queue chan *connection) *Relay {
+func NewRelay(queue chan *connection, stream chan *connection) *Relay {
   return &Relay{
     queue: queue,
+    stream: stream,
     connections: make(map[*connection]bool),
     register: make(chan *connection),
     unregister: make(chan *connection),
