@@ -35,8 +35,8 @@ ws.onopen = function (event) {
 };
 
 ws.onmessage = function (message) {
-  // the array contains 640*480 values from 0 to 255 representing
-  // the detected depth from 0 to 10000mm
+  // the array contains 640*480 values from 0 to 10000
+  // representing the depth in millimeters
   var array = new Uint16Array(message.data);
 };
 ```
