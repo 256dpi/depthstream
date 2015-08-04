@@ -2,7 +2,6 @@ package main
 
 import (
   "github.com/velovix/go-freenect"
-  "fmt"
   "sync"
 )
 
@@ -93,7 +92,6 @@ func (ds *DepthStream) Close() {
   close(ds.stop)
   ds.wg.Wait()
 
-  fmt.Println("Clean up...")
   ds.dev.StopDepthStream()
   ds.dev.Destroy()
   ds.ctx.Destroy()

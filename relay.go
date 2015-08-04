@@ -90,14 +90,12 @@ func manage(r *Relay) {
     select {
     case c := <-r.register:
       r.connections[c] = true
-      fmt.Printf("New client, total: %d\n", len(r.connections))
     case c := <-r.unregister:
       r.unstream <- c
       if _, ok := r.connections[c]; ok {
         delete(r.connections, c)
         close(c.send)
       }
-      fmt.Printf("Lost client, total: %d\n", len(r.connections))
     }
   }
 }
@@ -106,11 +104,6 @@ func (r *Relay) Start(port int) {
   go manage(r)
 
   http.HandleFunc("/", func(res http.ResponseWriter, req *http.Request){
-    if req.Method != "GET" {
-      http.Error(res, "Method not allowed", 405)
-      return
-    }
-
     ws, err := r.upgrader.Upgrade(res, req, nil)
     if err != nil {
       panic(err)
@@ -134,8 +127,6 @@ func (r *Relay) Start(port int) {
       panic(err)
     }
   }()
-
-  fmt.Printf("Server launched on port %d!\n", port)
 }
 
 func (r *Relay) Stop() {

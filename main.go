@@ -5,11 +5,14 @@ import (
   "syscall"
   "os/signal"
   "os"
+  "time"
 )
 
 func start(c *Config) {
   relay := NewRelay()
   relay.Start(c.port)
+
+  fmt.Printf("Server launched on port %d!\n", c.port)
 
   depthStream := NewDepthStream()
   depthStream.Open(c.device)
@@ -37,10 +40,23 @@ func start(c *Config) {
     }
   }()
 
+  ticker := time.NewTicker(1 * time.Second)
+
+  go func() {
+    for {
+      select {
+      case <-ticker.C:
+        fmt.Printf("\033[2K\033[1GClients: %d", len(relay.connections))
+      }
+    }
+  }()
+
   finish := make(chan os.Signal, 1)
   signal.Notify(finish, syscall.SIGINT, syscall.SIGTERM)
 
   <-finish
+
+  fmt.Println("\nClosing...")
 
   depthStream.Close()
   relay.Stop()
