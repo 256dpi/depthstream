@@ -32,7 +32,7 @@ Options:
 
   return &Config{
     info: getBool(a["--info"]),
-    device: getInt(a["--dev"]),
+    device: getInt(a["--device"]),
     port: getInt(a["--port"]),
     bigendian:getBool(a["--bigendian"]),
     reduce: getInt(a["--reduce"]),
