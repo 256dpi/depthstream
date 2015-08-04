@@ -35,7 +35,7 @@ ws.onopen = function (event) {
 ws.onmessage = function (message) {
   // the array contains 640*480 values from 0 to 255 representing
   // the detected depth from 0 to 10000mm
-  var array = new Uint8Array(message.data);
+  var array = new Uint16Array(message.data);
 };
 ```
 
