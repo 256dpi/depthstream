@@ -12,12 +12,20 @@ function process(array){
   for(var i=0; i<480; i++) {
     for(var j=0; j<640; j++) {
       var pos = i * 640 + j;
-      var value = 255 - array[pos];
       var index = pos * 4;
-      img.data[index] = value;
-      img.data[index + 1] = value;
-      img.data[index + 2] = value;
-      img.data[index + 3] = 255;
+
+      if(array[pos] == 0) {
+        img.data[index] = 255;
+        img.data[index + 1] = 0;
+        img.data[index + 2] = 0;
+        img.data[index + 3] = 255;
+      } else {
+        var value = 255 - (array[pos] / 10000 * 255);
+        img.data[index] = value;
+        img.data[index + 1] = value;
+        img.data[index + 2] = value;
+        img.data[index + 3] = 255;
+      }
     }
   }
 
@@ -34,7 +42,7 @@ ws.onopen = function (event) {
 ws.onmessage = function (message) {
   frames++;
   bytes += message.data.byteLength;
-  process(new Uint8Array(message.data));
+  process(new Uint16Array(message.data));
 };
 
 setInterval(function(){
