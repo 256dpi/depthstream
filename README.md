@@ -24,7 +24,7 @@ Options:
 Make a connection to the server and request a frame or stream mode by sending a message:
 
 ```js
-var ws = new WebSocket('ws://localhost:8080');
+var ws = new WebSocket('ws://localhost:9090');
 ws.binaryType = 'arraybuffer';
 
 ws.onopen = function (event) {
