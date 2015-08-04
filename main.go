@@ -15,16 +15,18 @@ func start(c *Config) {
   depthStream.Open(c.device)
 
   go func(){
-    var cache []uint16
+    var cache []byte
     list := make(map[*connection]bool)
     for {
       select {
-      case cache = <-depthStream.data:
+      case data := <-depthStream.data:
+        cache = Convert(c, data)
+
         for conn, _ := range list {
-          conn.send <- Convert(cache)
+          conn.send <- cache
         }
       case conn := <-relay.queue:
-        conn.send <- Convert(cache)
+        conn.send <- cache
       case conn := <-relay.stream:
         list[conn] = true
       case conn := <-relay.unstream:

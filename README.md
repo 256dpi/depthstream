@@ -15,10 +15,11 @@ Usage:
   depthstream [options]
 
 Options:
-  -h --help         Show this screen.
-  -i --info         Show connected Kinects.
-  -p --port=<num>   Port for server. [default: 9090].
-  -d --dev=<id>     Device to open. [default: 0].
+  -h --help             Show this screen.
+  -i --info             Show connected Kinects.
+  -p --port=<n>         Port for server. [default: 9090].
+  -d --device=<n>       Device to open. [default: 0].
+  -b --bigendian        Use big endian encoding.
 ```
 
 Make a connection to the server and request a frame or stream mode by sending a message:
