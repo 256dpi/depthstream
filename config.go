@@ -7,7 +7,6 @@ import (
 
 type Config struct {
   info bool
-  start bool
   device int
   port int
 }
@@ -16,16 +15,21 @@ func ParseConfig() *Config {
   usage := `Depthstream.
 
 Usage:
-    depthstream info
-    depthstream start <device> <port>`
+  depthstream [options]
+
+Options:
+  -h --help         Show this screen.
+  -i --info         Show connected Kinects.
+  -p --port=<num>   Port for server. [default: 9090].
+  -d --dev=<id>     Device to open. [default: 0].
+`
 
   a, _ := docopt.Parse(usage, nil, true, "", false)
 
   return &Config{
-    getBool(a["info"]),
-    getBool(a["start"]),
-    getInt(a["<device>"]),
-    getInt(a["<port>"]),
+    info: getBool(a["--info"]),
+    device: getInt(a["--dev"]),
+    port: getInt(a["--port"]),
   }
 }
 

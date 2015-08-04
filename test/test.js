@@ -32,7 +32,7 @@ function process(array){
   ctx.putImageData(img, 0, 0);
 };
 
-var ws = new WebSocket('ws://localhost:8080');
+var ws = new WebSocket('ws://localhost:9090');
 ws.binaryType = 'arraybuffer';
 
 ws.onopen = function (event) {

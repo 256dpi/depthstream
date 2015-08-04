@@ -12,8 +12,13 @@ With Depsthream you can easily get depth image data from your Kinect using a Web
 Depthstream.
 
 Usage:
-    depthstream info
-    depthstream start <device> <port>
+  depthstream [options]
+
+Options:
+  -h --help         Show this screen.
+  -i --info         Show connected Kinects.
+  -p --port=<num>   Port for server. [default: 9090].
+  -d --dev=<id>     Device to open. [default: 0].
 ```
 
 Make a connection to the server and request a frame or stream mode by sending a message:

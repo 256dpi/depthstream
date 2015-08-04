@@ -55,7 +55,7 @@ func main() {
     } else {
       fmt.Printf("There are %d Kinects connected.\n", count)
     }
-  } else if c.start {
+  } else {
     if c.device >= 0 && c.port > 100 {
       if c.device >= CountDevices() {
         fmt.Printf("Requested device %d is not connected!", c.device);
