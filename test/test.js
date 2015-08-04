@@ -6,12 +6,18 @@ var ctx = canvas.getContext('2d');
 var frames = 0;
 var bytes = 0;
 
-function process(array){
-  var img = ctx.createImageData(640, 480);
+var width = 640 / 1;
+var height = 480 / 1;
 
-  for(var i=0; i<480; i++) {
-    for(var j=0; j<640; j++) {
-      var pos = i * 640 + j;
+canvas.width = width;
+canvas.height = height;
+
+function process(array){
+  var img = ctx.createImageData(width, height);
+
+  for(var i=0; i<height; i++) {
+    for(var j=0; j<width; j++) {
+      var pos = i * width + j;
       var index = pos * 4;
 
       if(array[pos] == 0) {

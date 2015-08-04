@@ -20,6 +20,7 @@ Options:
   -p --port=<n>         Port for server. [default: 9090].
   -d --device=<n>       Device to open. [default: 0].
   -b --bigendian        Use big endian encoding.
+  -r --reduce=<n>       Reduce resolution by nothing or a power of 2. [default: 0]
 ```
 
 Make a connection to the server and request a frame or stream mode by sending a message:

@@ -10,6 +10,7 @@ type Config struct {
   device int
   port int
   bigendian bool
+  reduce int
 }
 
 func ParseConfig() *Config {
@@ -24,6 +25,7 @@ Options:
   -p --port=<n>         Port for server. [default: 9090].
   -d --device=<n>       Device to open. [default: 0].
   -b --bigendian        Use big endian encoding.
+  -r --reduce=<n>       Reduce resolution by nothing or a power of 2. [default: 0]
 `
 
   a, _ := docopt.Parse(usage, nil, true, "", false)
@@ -33,6 +35,7 @@ Options:
     device: getInt(a["--dev"]),
     port: getInt(a["--port"]),
     bigendian:getBool(a["--bigendian"]),
+    reduce: getInt(a["--reduce"]),
   }
 }
 
