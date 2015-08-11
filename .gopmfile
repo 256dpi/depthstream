@@ -5,3 +5,4 @@ include =
 github.com/velovix/go-freenect = 
 github.com/docopt/docopt-go = 
 github.com/gorilla/websocket = 
+github.com/cznic/sortutil = 

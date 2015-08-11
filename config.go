@@ -11,6 +11,7 @@ type Config struct {
   port int
   bigendian bool
   reduce int
+  interpolate int
 }
 
 func ParseConfig() *Config {
@@ -26,6 +27,7 @@ Options:
   -d --device=<n>       Device to open. [default: 0].
   -b --bigendian        Use big endian encoding.
   -r --reduce=<n>       Reduce resolution by nothing or a power of 2. [default: 0]
+  -I --interpolate=<n>  Interpolate zeroed pixels with a filter block of n*n. [default: 0]
 `
 
   a, _ := docopt.Parse(usage, nil, true, "", false)
@@ -36,6 +38,7 @@ Options:
     port: getInt(a["--port"]),
     bigendian:getBool(a["--bigendian"]),
     reduce: getInt(a["--reduce"]),
+    interpolate: getInt(a["--interpolate"]),
   }
 }
 
