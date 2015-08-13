@@ -12,6 +12,7 @@ type Config struct {
   bigendian bool
   reduce int
   interpolate int
+  skip int
 }
 
 func ParseConfig() *Config {
@@ -28,6 +29,7 @@ Options:
   -b --bigendian        Use big endian encoding.
   -r --reduce=<n>       Reduce resolution by nothing or a power of 2. [default: 0]
   -I --interpolate=<n>  Interpolate zeroed pixels with a filter block of n*n. [default: 0]
+  -s --skip=<n>         Skip every nth frame of the incomming 30fps stream. [default: 0]
 `
 
   a, _ := docopt.Parse(usage, nil, true, "", false)
@@ -39,6 +41,7 @@ Options:
     bigendian:getBool(a["--bigendian"]),
     reduce: getInt(a["--reduce"]),
     interpolate: getInt(a["--interpolate"]),
+    skip: getInt(a["--skip"]),
   }
 }
 

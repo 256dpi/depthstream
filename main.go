@@ -19,10 +19,21 @@ func start(c *Config) {
 
   go func(){
     var cache []byte
+    i := 0
     list := make(map[*connection]bool)
     for {
       select {
       case data := <-depthStream.data:
+        if(c.skip > 0) {
+          i++;
+
+          if(i > c.skip) {
+            i = 0
+          } else {
+            break
+          }
+        }
+
         cache = Convert(c, data)
 
         for conn, _ := range list {
