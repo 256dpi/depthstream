@@ -21,13 +21,13 @@ func reduce(data []uint16, n int) []uint16 {
   return set
 }
 
-func averagePixelBlock(data []uint16, x int, y int, blockSize int) uint16 {
+func averagePixelBlock(data []uint16, x int, y int, w int, h int, blockSize int) uint16 {
   block := make(sortutil.Uint16Slice, 0, (blockSize + 1) * blockSize)
 
   for yy := y - blockSize; yy <= y + blockSize; yy++ {
     for xx := x - blockSize; xx <= x + blockSize; xx++ {
-      if yy >= 0 && yy < 480 && xx >= 0 && xx < 640 {
-        p := data[yy * 640 + xx]
+      if yy >= 0 && yy < h && xx >= 0 && xx < w {
+        p := data[yy * w + xx]
 
         if p > 0 {
           block = append(block, p)
@@ -44,13 +44,13 @@ func averagePixelBlock(data []uint16, x int, y int, blockSize int) uint16 {
   }
 }
 
-func interpolate(data []uint16, blockSize int) []uint16 {
-  for y := 0; y < 480; y++ {
-    for x := 0; x < 640; x++ {
-      i := y * 640 + x
+func interpolate(data []uint16, w int, h int, blockSize int) []uint16 {
+  for y := 0; y < h; y++ {
+    for x := 0; x < w; x++ {
+      i := y * w + x
 
       if data[i] == 0 {
-        data[i] = averagePixelBlock(data, x, y, blockSize)
+        data[i] = averagePixelBlock(data, x, y, w, h, blockSize)
       }
     }
   }
@@ -59,12 +59,19 @@ func interpolate(data []uint16, blockSize int) []uint16 {
 }
 
 func Convert(c *Config, data []uint16) []byte {
-  if c.interpolate > 0 {
-    data = interpolate(data, c.interpolate)
-  }
+  var w, h int
 
   if c.reduce > 0 && isPowerOfTwo(c.reduce) {
     data = reduce(data, c.reduce)
+    w = 640 / c.reduce
+    h = 480 / c.reduce
+  } else {
+    w = 640
+    h = 480
+  }
+
+  if c.interpolate > 0 {
+    data = interpolate(data, w, h, c.interpolate)
   }
 
   buf := make([]byte, len(data) * 2)
