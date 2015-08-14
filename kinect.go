@@ -74,9 +74,19 @@ func (ds *DepthStream) Open(device int) {
     panic(err)
   }
 
+  ds.dev.SetVideoCallback(func(device *freenect.Device, video []byte, timestamp uint32){
+    println(len(video))
+  })
+
   ds.dev.SetDepthCallback(func(device *freenect.Device, depth []uint16, timestamp uint32){
     ds.data <- depth
   })
+
+  err = ds.dev.StartVideoStream(freenect.ResolutionMedium, freenect.VideoFormatRGB)
+
+  if err != nil {
+    panic(err)
+  }
 
   err = ds.dev.StartDepthStream(freenect.ResolutionMedium, freenect.DepthFormatMM)
 
@@ -92,6 +102,7 @@ func (ds *DepthStream) Close() {
   close(ds.stop)
   ds.wg.Wait()
 
+  ds.dev.StopVideoStream()
   ds.dev.StopDepthStream()
   ds.dev.Destroy()
   ds.ctx.Destroy()
