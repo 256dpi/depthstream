@@ -8,8 +8,9 @@ var colorContext = color.getContext('2d');
 var frames = 0;
 var bytes = 0;
 
-var width = 640 / 1;
-var height = 480 / 1;
+var reduce = getParameterByName('reduce') || 1;
+var width = 640 / reduce;
+var height = 480 / reduce;
 
 depth.width = width;
 depth.height = height;
@@ -81,3 +82,10 @@ setInterval(function(){
   frames = 0;
   bytes = 0;
 }, 1000);
+
+function getParameterByName(name) {
+  name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+  var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
+  var results = regex.exec(location.search);
+  return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
