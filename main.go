@@ -36,7 +36,7 @@ func start(c *Config) {
           }
         }
 
-        depthCache = Convert(c, depth)
+        depthCache = ConvertDepth(c, depth)
 
         cache = make([]byte, len(depthCache) + len(colorCache))
         copy(cache[:len(depthCache)], depthCache)

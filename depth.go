@@ -5,11 +5,7 @@ import (
   "github.com/cznic/sortutil"
 )
 
-func isPowerOfTwo(x int) bool {
-  return (x & (x - 1)) == 0;
-}
-
-func reduce(data []uint16, n int) []uint16 {
+func reduceDepth(data []uint16, n int) []uint16 {
   set := make([]uint16, len(data) / n / 2)
 
   for y := 0; y < 480 / n; y++ {
@@ -44,7 +40,7 @@ func averagePixelBlock(data []uint16, x int, y int, w int, h int, blockSize int)
   }
 }
 
-func interpolate(data []uint16, w int, h int, blockSize int) []uint16 {
+func interpolateDepth(data []uint16, w int, h int, blockSize int) []uint16 {
   for y := 0; y < h; y++ {
     for x := 0; x < w; x++ {
       i := y * w + x
@@ -58,11 +54,11 @@ func interpolate(data []uint16, w int, h int, blockSize int) []uint16 {
   return data
 }
 
-func Convert(c *Config, data []uint16) []byte {
+func ConvertDepth(c *Config, data []uint16) []byte {
   var w, h int
 
   if c.reduce > 0 && isPowerOfTwo(c.reduce) {
-    data = reduce(data, c.reduce)
+    data = reduceDepth(data, c.reduce)
     w = 640 / c.reduce
     h = 480 / c.reduce
   } else {
@@ -71,7 +67,7 @@ func Convert(c *Config, data []uint16) []byte {
   }
 
   if c.interpolate > 0 {
-    data = interpolate(data, w, h, c.interpolate)
+    data = interpolateDepth(data, w, h, c.interpolate)
   }
 
   buf := make([]byte, len(data) * 2)
