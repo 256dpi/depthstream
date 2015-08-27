@@ -13,6 +13,7 @@ type Config struct {
   reduce int
   interpolate int
   skip int
+  color bool
 }
 
 func ParseConfig() *Config {
@@ -30,6 +31,7 @@ Options:
   -r --reduce=<n>       Reduce resolution by nothing or a power of 2. [default: 0]
   -I --interpolate=<n>  Interpolate zeroed pixels with a filter block of n*n. [default: 0]
   -s --skip=<n>         Skip every nth frame of the incomming 30fps stream. [default: 0]
+  -c --color            Append color data.
 `
 
   a, _ := docopt.Parse(usage, nil, true, "", false)
@@ -42,6 +44,7 @@ Options:
     reduce: getInt(a["--reduce"]),
     interpolate: getInt(a["--interpolate"]),
     skip: getInt(a["--skip"]),
+    color: getBool(a["--color"]),
   }
 }
 
