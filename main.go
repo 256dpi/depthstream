@@ -46,7 +46,7 @@ func start(c *Config) {
           conn.send <- cache
         }
       case color := <-depthStream.color:
-        colorCache = color
+        colorCache = ConvertColor(c, color)
       case conn := <-relay.queue:
         conn.send <- cache
       case conn := <-relay.stream:
