@@ -23,6 +23,7 @@ Options:
   -r --reduce=<n>       Reduce resolution by nothing or a power of 2. [default: 0]
   -I --interpolate=<n>  Interpolate zeroed pixels with a filter block of n*n. [default: 0]
   -s --skip=<n>         Skip every nth frame of the incomming 30fps stream. [default: 0]
+  -c --color            Append color data.
 ```
 
 Make a connection to the server and request a frame or stream mode by sending a message:
