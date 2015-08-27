@@ -6,7 +6,7 @@ import (
 )
 
 func reduceDepth(data []uint16, n int) []uint16 {
-  set := make([]uint16, len(data) / n / 2)
+  set := make([]uint16, len(data) / n / n)
 
   for y := 0; y < 480 / n; y++ {
     for x := 0; x < 640 / n; x++ {
