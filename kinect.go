@@ -23,20 +23,22 @@ func CountDevices() int {
 }
 
 type DepthStream struct {
-  data chan []uint16
+  depth chan []uint16
+  color chan []byte
   stop chan int
   wg *sync.WaitGroup
   ctx *freenect.Context
   dev *freenect.Device
+  withColor bool
 }
 
 func NewDepthStream() *DepthStream {
   return &DepthStream{
-    make(chan []uint16),
-    make(chan int),
-    &sync.WaitGroup{},
-    nil,
-    nil,
+    depth: make(chan []uint16),
+    color: make(chan []byte),
+    stop: make(chan int),
+    wg: &sync.WaitGroup{},
+    withColor: false,
   }
 }
 
@@ -53,7 +55,7 @@ func process(ds *DepthStream){
   }
 }
 
-func (ds *DepthStream) Open(device int) {
+func (ds *DepthStream) Open(device int, withColor bool) {
   var (
     err error
     ctx freenect.Context
@@ -74,8 +76,22 @@ func (ds *DepthStream) Open(device int) {
     panic(err)
   }
 
+  if withColor {
+    ds.withColor = true
+
+    ds.dev.SetVideoCallback(func(device *freenect.Device, video []byte, timestamp uint32){
+      ds.color <- video;
+    })
+
+    err = ds.dev.StartVideoStream(freenect.ResolutionMedium, freenect.VideoFormatRGB)
+
+    if err != nil {
+      panic(err)
+    }
+  }
+
   ds.dev.SetDepthCallback(func(device *freenect.Device, depth []uint16, timestamp uint32){
-    ds.data <- depth
+    ds.depth <- depth
   })
 
   err = ds.dev.StartDepthStream(freenect.ResolutionMedium, freenect.DepthFormatMM)
@@ -91,6 +107,10 @@ func (ds *DepthStream) Open(device int) {
 func (ds *DepthStream) Close() {
   close(ds.stop)
   ds.wg.Wait()
+
+  if ds.withColor {
+    ds.dev.StopVideoStream()
+  }
 
   ds.dev.StopDepthStream()
   ds.dev.Destroy()

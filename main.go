@@ -15,15 +15,17 @@ func start(c *Config) {
   fmt.Printf("Server launched on port %d!\n", c.port)
 
   depthStream := NewDepthStream()
-  depthStream.Open(c.device)
 
   go func(){
+    var depthCache []byte
+    var colorCache []byte
     var cache []byte
+
     i := 0
     list := make(map[*connection]bool)
     for {
       select {
-      case data := <-depthStream.data:
+      case depth := <-depthStream.depth:
         if(c.skip > 0) {
           i++;
 
@@ -34,11 +36,17 @@ func start(c *Config) {
           }
         }
 
-        cache = Convert(c, data)
+        depthCache = Convert(c, depth)
+
+        cache = make([]byte, len(depthCache) + len(colorCache))
+        copy(cache[:len(depthCache)], depthCache)
+        copy(cache[len(depthCache):], colorCache)
 
         for conn, _ := range list {
           conn.send <- cache
         }
+      case color := <-depthStream.color:
+        colorCache = color
       case conn := <-relay.queue:
         conn.send <- cache
       case conn := <-relay.stream:
@@ -50,6 +58,8 @@ func start(c *Config) {
       }
     }
   }()
+
+  depthStream.Open(c.device, c.color)
 
   ticker := time.NewTicker(1 * time.Second)
 

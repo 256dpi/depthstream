@@ -2,22 +2,29 @@
 <head>
   <title>Depthstream Test</title>
   <style>
-    #info, #notes {
-      text-align: center;
-      font-family: sans-serif;
-      margin: 5px;
+    body {
+      margin: 20px
     }
 
-    #depth {
+    #info, #notes, #canvases {
+      text-align: center;
+      font-family: sans-serif;
+      margin: 10px;
+    }
+
+    #depth, #color {
       border: 1px solid black;
-      display: block;
-      margin: 0 auto;
+      display: inline;
+      margin: 10px auto;
     }
   </style>
 </head>
 <body>
   <div id="info">? F/s - ? MB/s</div>
-  <canvas id="depth"></canvas>
+  <div id="canvases">
+    <canvas id="depth"></canvas>
+    <canvas id="color"></canvas>
+  </div>
   <div id="notes">Pixels are mapped from 0 to 10m. Red areas are clipped pixels with zero distance.</div>
   <script src="test.js"></script>
 </body>
